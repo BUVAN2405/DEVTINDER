@@ -3,93 +3,18 @@ const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
 
+const cookieParser = require("cookie-parser");
+
 app.use(express.json());
+app.use(cookieParser());
 
-app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
+const authRouter = require("./router/authRouter");
+const requestRouter = require("./router/requestRouter");
+const profileRouter = require("./router/profileRouter");
 
-  try {
-    await user.save();
-    res.send("data sent successfully");
-  } catch (err) {
-    res.status(400).send("error saving the user");
-  }
-});
-
-//
-app.get("/user", async (req, res) => {
-  const userEmail = req.body.email;
-
-  try {
-    const user = await User.findOne({ email: userEmail });
-    res.send(user);
-
-    //     const user = await User.find({email : email});
-    //     if(users.length ===0 ) {
-    //     res.status(404)send
-
-    //   } else {
-    //   res.send(users);
-    // }
-  } catch (err) {
-    res.status(400).send("error fetching the user");
-  }
-});
-
-app.get("/feed", async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.send(users);
-  } catch (err) {
-    res.status(400).send("someithing went wrong");
-  }
-});
-
-app.delete("/user", async (req, res) => {
-  const userdel = req.body.userId;
-  try {
-    const users = await User.deleteOne({ userdel });
-    res.send(users);
-    d;
-  } catch (err) {
-    res.status(400).send("unable to delete");
-  }
-});
-
-// app.patch("/user", async (req, res) => {
-//   const userId = req.body.userId;
-//   const data = req.body;
-
-//   // Optional: Validate userId and data here
-
-//   try {
-//     const updatedUser = await User.findByIdAndUpdate({ _id: userId }, data, {
-//       returnDocument: "before ",
-//     });
-//     console.log(updatedUser); // Log the updated user
-//     res.send("user updated successfully");
-//   } catch (err) {
-//     res.status(400).send("unable to update");
-//   }
-// });
-
-app.patch("/user", async (req, res) => {
-  const userId = req.body.email;
-  const data = req.body;
-
-  // Optional: Validate userId and data here
-
-  try {
-    const updatedUser = await User.findByIdAndUpdate({ _id: userId }, data, {
-      returnDocument: "before ",
-    });
-    console.log(updatedUser); // Log the updated user
-    res.send("user updated successfully");
-  } catch (err) {
-    res.status(400).send("unable to update");
-    ss;
-  }
-});
+app.use("/", authRouter);
+app.use("/", requestRouter);
+app.use("/", profileRouter);
 
 connectDB()
   .then(() => {
@@ -99,5 +24,5 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.error("database cannot be connected");
+    console.error(" database cannot be connected");
   });
