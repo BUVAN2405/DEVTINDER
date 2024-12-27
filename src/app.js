@@ -2,6 +2,9 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
+const cors = require("cors");
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 const cookieParser = require("cookie-parser");
 
@@ -12,7 +15,6 @@ const authRouter = require("./router/authRouter");
 const requestRouter = require("./router/requestRouter");
 const profileRouter = require("./router/profileRouter");
 const userRouter = require("./router/user");
-
 app.use("/", authRouter);
 app.use("/", requestRouter);
 app.use("/", profileRouter);

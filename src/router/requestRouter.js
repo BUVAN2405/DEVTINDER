@@ -34,7 +34,7 @@ requestRouter.post(
       });
 
       if (existConnectionRequest) {
-        return res.status(400).send({ message: "unable to send request " });
+        return res.status(400).send({ message: "Connection Request Already Exists!! " });
       }
 
       const connectionRequest = new ConnectionRequest({

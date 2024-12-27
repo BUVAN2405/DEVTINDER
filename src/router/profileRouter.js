@@ -11,14 +11,14 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
 
     res.send(user);
   } catch (err) {
-    res.status(400).send("error : " + err.message);
+    res.status(400).send("Invalid credentials");
   }
 });
 
 profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
   try {
     if (!validateToUpdate(req)) {
-      throw new Error("unable tho edit");
+      throw new Error("unable to edit");
     }
 
     const loggedInUser = req.user;
@@ -30,7 +30,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     await loggedInUser.save();
 
     res.json({
-      message: "Profile updated successfully",
+      message:  `${loggedInUser.firstName}, your profile updated successfuly`,
       data: loggedInUser,
     });
   } catch (err) {
@@ -59,7 +59,7 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
 
     // Hash the new password
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-    
+
     loggedInUser.password = hashedNewPassword;
 
     // Save the updated user object

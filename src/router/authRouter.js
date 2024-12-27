@@ -13,26 +13,18 @@ authRouter.post("/login", async (req, res) => {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-      throw new Error("invalid credentail");
+      throw new Error("invalid credentials");
     }
     const isPasswordValid = await user.validatePassword(password);
 
     if (isPasswordValid) {
       const token = await user.getJWT();
 
-      res.cookie("token", token);     
+      res.cookie("token", token);
 
-
-
-
-
-
-
-
-
-      res.send("Logged successfully");
+      res.send(user);
     } else {
-      throw new Error("invalid credentail");
+      throw new Error("invalid credential");
     }
   } catch (err) {
     res.status(400).send("error: " + err.message);
@@ -58,20 +50,26 @@ authRouter.post("/signup", async (req, res) => {
       email,
       password: passwordHash,
     });
+    
+    const savedUser = await user.save();
+    const token = await savedUser.getJWT();
 
-    await user.save();
-    res.send("data sent successfully");
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 8 * 3600000),
+    });
+
+    res.json({ message: "User Added successfully!", data: savedUser });
   } catch (err) {
-    res.status(400).send("error saving the user");
+    res.status(400).send("ERROR : " + err.message);
   }
 });
 
-
-authRouter.post("/logout", async (req,res) => {
-  res.cookie("token", null, {
-    expires: new Date(Date.now())
-  }).send("logout seuccessfully");
-
+authRouter.post("/logout", async (req, res) => {
+  res
+    .cookie("token", null, {
+      expires: new Date(Date.now()),
+    })
+    .send("logout successfully");
 });
 
 module.exports = authRouter;

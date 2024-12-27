@@ -4,7 +4,7 @@ const User = require("../models/user");
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 
-const USER_SAFE_DATA = "firstName lastName";
+const USER_SAFE_DATA = "firstName lastName photoUrl  about skills gender";
 userRouter.get("/sent/requests/received", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
@@ -12,14 +12,14 @@ userRouter.get("/sent/requests/received", userAuth, async (req, res) => {
     const connectionRequest = await ConnectionRequest.find({
       toUserId: loggedInUser._id,
       status: "interested",
-    }).populate("fromUserId", "firstName lastName");
+    }).populate("fromUserId", USER_SAFE_DATA);
 
     res.json({
       message: "data of the user fetched successfully",
       data: connectionRequest,
     });
   } catch (err) {
-    res.status(404).send("ERROR : " + err.message);
+    res.status(400).send("ERROR : " + err.message);
   }
 });
 
@@ -80,7 +80,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    res.send(users);
+    res.json({ data: users });
   } catch (err) {
     res.status(400).send({ message: err.message });
   }
