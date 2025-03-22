@@ -16,12 +16,12 @@ const authRouter = require("./router/authRouter");
 const requestRouter = require("./router/requestRouter");
 const profileRouter = require("./router/profileRouter");
 const userRouter = require("./router/user");
-//const PaymentRouter =require("./router/payment")
+
 app.use("/", authRouter);
 app.use("/", requestRouter);
 app.use("/", profileRouter);
 app.use("/", userRouter);
-//app.use("/", paymentRouter);
+
 connectDB()
   .then(() => {
     console.log("database connected successfully");
