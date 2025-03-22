@@ -72,4 +72,8 @@ authRouter.post("/logout", async (req, res) => {
     .send("logout successfully");
 });
 
+authRouter.delete("/account/delete", async (req,res)=> {
+  res.data(null).send("your account as been deleted")
+})
+
 module.exports = authRouter;
