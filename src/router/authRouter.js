@@ -50,7 +50,7 @@ authRouter.post("/signup", async (req, res) => {
       email,
       password: passwordHash,
     });
-    
+
     const savedUser = await user.save();
     const token = await savedUser.getJWT();
 
@@ -72,8 +72,8 @@ authRouter.post("/logout", async (req, res) => {
     .send("logout successfully");
 });
 
-authRouter.delete("/account/delete", async (req,res)=> {
-  res.data(null).send("your account as been deleted")
-})
+authRouter.delete("/account/delete", async (req, res) => {
+  res.data(null).send("your account as been deleted");
+});
 
 module.exports = authRouter;
