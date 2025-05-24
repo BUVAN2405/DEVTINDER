@@ -2,12 +2,13 @@ const express = require("express");
 const paymentRouter = express.Router();
 const { userAuth } = require("../middlewares/auth");
 const razorpayInstance = require("../utils/razorpay");
-const Payment = require("../models/payments");
+const Payment = require("../models/payment");
+const { membershipAmount } = require("../utils/constant");
 
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
   try {
-    const order = razorpayInstance.orders.create({
-      amount: req.body.amount,
+    const order = await razorpayInstance.orders.create({
+      amount: membershipAmount[membershipType] * 100,
       currency: "INR",
       receipt: req.body.receipt,
       notes: {
@@ -16,22 +17,19 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
       },
     });
 
-    const payment = new payment({
+    const payment = new Payment({
       userId: req.user._id,
       orderId: order.id,
-      status: "created",
-      amount: req.body.amount,
+      status: order.status,
+      amount: order.amount,
       currency: "INR",
-      receipt: req.body.receipt,
-      notes: {
-        key1: "value3",
-        key2: "value2",
-      },
-      paymentMethod: req.body.paymentMethod,
+      receipt: order.receipt,
+      notes: order.notes,
     });
 
     const savedPayment = await payment.save();
-    res.json({ ...savedPayment._doc, orderId: order.id });
+
+    res.json({ ...savedPayment.toJSON(), keyId: process.env.RAZORPAY_KEY_ID });
   } catch (err) {
     res.status(400).send("error: " + err.message);
   }
